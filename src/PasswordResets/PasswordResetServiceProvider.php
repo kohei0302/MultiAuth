@@ -39,10 +39,10 @@ class PasswordResetServiceProvider extends ServiceProvider
             $tokens     = $app['auth.password.tokens'];
             $providers  = [];
             $views      = [];
-            if(!empty($app['config']['auth.multi-auth'])) {
-                foreach($app['config']['auth.multi-auth'] AS $type => $config) {
+            if($app['config']->has('auth.multi-auth')) {
+                foreach($app['config']->get('auth.multi-auth') AS $type => $config) {
                     $providers[$type] = $app['auth']->$type()->driver()->getProvider();
-                    $views[$type]     = isset($config['email']) ? $config['email'] : $app['config']['auth.password.email'];
+                    $views[$type]     = isset($config['email']) ? $config['email'] : $app['config']->get('auth.password.email');
                 }
             }
             // The password broker uses a token repository to validate tokens and send user
@@ -65,8 +65,8 @@ class PasswordResetServiceProvider extends ServiceProvider
             // The database token repository is an implementation of the token repository
             // interface, and is responsible for the actual storing of auth tokens and
             // their e-mail addresses. We will inject this table and hash key to it.
-            $table  = $app['config']['auth.password.table'];
-            $key    = $app['config']['app.key'];
+            $table  = $app['config']->get('auth.password.table');
+            $key    = $app['config']->get('app.key');
             $expire = $app['config']->get('auth.password.expire', 60);
             return new DbRepository($connection, $table, $key, $expire);
         });
